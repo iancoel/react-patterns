@@ -4213,7 +4213,7 @@
     "minimist" "0.0.8"
 
 "mo-js@^0.288.2":
-  "integrity" "sha1-ZiyAPRihEM9+Qi1WnvzeoEiAWS4= sha512-UoAtasUhUdJW1nJii4lyRUrSbstTDO6WF3+iP1fQ2y2ravcyFOJoNdmDLAZiInsnsiOiRVlhKjB2HuF23Fjghg=="
+  "integrity" "sha512-UoAtasUhUdJW1nJii4lyRUrSbstTDO6WF3+iP1fQ2y2ravcyFOJoNdmDLAZiInsnsiOiRVlhKjB2HuF23Fjghg=="
   "resolved" "https://registry.npmjs.org/mo-js/-/mo-js-0.288.2.tgz"
   "version" "0.288.2"
   dependencies:

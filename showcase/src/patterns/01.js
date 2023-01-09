@@ -1,4 +1,5 @@
-import React, {useState} from 'react'
+import React, {Component, useState} from 'react'
+import mojs from 'mo-js'
 import styles from './index.css'
 
 const initialState = {
@@ -7,12 +8,31 @@ const initialState = {
   isClicked: false
 }
 
-const MediumClap = () => {
+// Higher Order Component
+
+const withClapAnimation = WrappedComponent => {
+  class WithClapANimation extends Component {
+    state = {
+      animationTimeline: new mojs.Timeline()
+    }
+
+    render () {
+      return <WrappedComponent {...this.props} animationTimeline={this.state.animationTimeline}/>
+    }
+  }
+
+  return WithClapANimation
+}
+
+
+const MediumClap = ({animationTimeline}) => {
   const MAXIMUM_USER_CLAP = 50
   const [clapState, setClapState] = useState(initialState)
   const {count, countTotal, isClicked} = clapState
 
   const handleClapClick = () => {
+    animationTimeline.replay()
+
     setClapState(prevState => ({
       isClicked: true,
       count: Math.min(count + 1, MAXIMUM_USER_CLAP),
@@ -73,5 +93,10 @@ const ClapTotal = ({countTotal}) => {
   )
 }
 
+// Usage
+const Usage = () => {
+  const AnimatedMediumClap = withClapAnimation(MediumClap)
+  return <AnimatedMediumClap />
+}
 
-export default MediumClap
+export default Usage
