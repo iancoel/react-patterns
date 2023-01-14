@@ -18,16 +18,28 @@ const withClapAnimation = WrappedComponent => {
     }
 
     componentDidMount() {
+      const tlDuration = 300
       const scaleButton = new mojs.Html({
         el: '#clap',
-        duration: 300,
+        duration: tlDuration,
         scale: {1.3 : 1},
         easing: mojs.easing.ease.out
       })
 
+      const countTotalAnimation = new mojs.Html({
+        el: '#clapCountTotal',
+        opacity: {0 : 1},
+        delay: (3 * tlDuration) / 2,
+        duration: tlDuration,
+        y: {0 : -3}
+      })
+
       const clap = document.getElementById('clap')
       clap.style.transform = 'scale(1,1)'
-      const newAnimationTimeline = this.animationTimeline.add([scaleButton])
+      const newAnimationTimeline = this.animationTimeline.add([
+        scaleButton,
+        countTotalAnimation
+      ])
       this.setState({
         animationTimeline: newAnimationTimeline
       })
@@ -43,7 +55,7 @@ const withClapAnimation = WrappedComponent => {
 
 
 const MediumClap = ({animationTimeline}) => {
-  const MAXIMUM_USER_CLAP = 50
+  const MAXIMUM_USER_CLAP = 12
   const [clapState, setClapState] = useState(initialState)
   const {count, countTotal, isClicked} = clapState
 
@@ -68,7 +80,7 @@ const MediumClap = ({animationTimeline}) => {
     >
       <ClapIcon isClicked={isClicked} />
       <ClapCount count={count} />
-      <ClapTotal countTotal={countTotal} />
+      <CountTotal countTotal={countTotal} />
     </button>
   )
 }
@@ -77,7 +89,7 @@ const MediumClap = ({animationTimeline}) => {
 //
 // Subcomponents
 // I should have put them in a different folder
-// but for tests purposals I'm going to leave them here (: 
+// but for studies purposals I'm going to leave them here (: 
 //
 
 const ClapIcon = ({isClicked}) => {
@@ -103,9 +115,12 @@ const ClapCount = ({count}) => {
   )
 }
 
-const ClapTotal = ({countTotal}) => {
+const CountTotal = ({countTotal}) => {
   return (
-    <span className={styles.total}>
+    <span
+      id='clapCountTotal'
+      className={styles.total}
+    >
       {countTotal}
     </span>
   )
