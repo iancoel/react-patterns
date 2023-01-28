@@ -1,4 +1,4 @@
-import React, {Component, useState, useEffect} from 'react'
+import React, {useState, useLayoutEffect, useCallback} from 'react'
 import mojs from 'mo-js'
 import styles from './index.css'
 
@@ -10,20 +10,29 @@ const initialState = {
 
 // Custom hook for animation
 
-const useClapAnimation = () => {
+const useClapAnimation = ({
+  clapEl,
+  countEl,
+  countTotalEl
+}) => {
   const [animationTimeline, setAnimationTimeline] = useState(() => new mojs.Timeline())
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const hasNotElements = !clapEl || !countEl || !countTotalEl
+    if (hasNotElements) {
+      return
+    }
+
     const tlDuration = 300
     const scaleButton = new mojs.Html({
-      el: '#clap',
+      el: clapEl,
       duration: tlDuration,
       scale: {1.3 : 1},
       easing: mojs.easing.ease.out
     })
 
     const countTotalAnimation = new mojs.Html({
-      el: '#clapCountTotal',
+      el: countTotalEl,
       opacity: {0 : 1},
       delay: (3 * tlDuration) / 2,
       y: {0 : -3},
@@ -31,7 +40,7 @@ const useClapAnimation = () => {
     })
 
     const countAnimation = new mojs.Html({
-      el: '#clapCount',
+      el: countEl,
       opacity: {0 : 1},
       y: {0 : -30},
       duration: tlDuration
@@ -42,7 +51,7 @@ const useClapAnimation = () => {
     })
 
     const triangleBurst = new mojs.Burst({
-      parent: '#clap',
+      parent: clapEl,
       radius: {50 : 95},
       count: 5,
       angle: 30,
@@ -59,7 +68,7 @@ const useClapAnimation = () => {
       }
     })
     const circleBurst = new mojs.Burst({
-      parent: '#clap',
+      parent: clapEl,
       radius: {50 : 75},
       count: 5,
       angle: 25,
@@ -73,9 +82,12 @@ const useClapAnimation = () => {
         easing: mojs.easing.bezier(0.1, 1, 0.3, 1)
       }
     })
-
-    const clap = document.getElementById('clap')
-    clap.style.transform = 'scale(1,1)'
+    if (typeof clapEl === 'string') {
+      clap = document.getElementById('#clap')
+      clap.style.transform = 'scale(1,1)'
+    } else {
+      clapEl.style.transform = 'scale(1,1)'
+    }
     const newAnimationTimeline = animationTimeline.add([
       circleBurst,
       countAnimation,
@@ -84,7 +96,7 @@ const useClapAnimation = () => {
       triangleBurst
     ])
     setAnimationTimeline(newAnimationTimeline)
-  }, [])
+  }, [clapEl, countEl, countTotalEl])
 
   return animationTimeline
 }
@@ -93,8 +105,20 @@ const MediumClap = () => {
   const MAXIMUM_USER_CLAP = 12
   const [clapState, setClapState] = useState(initialState)
   const {count, countTotal, isClicked} = clapState
+  const [{clapRef, clapCountRef, countTotalRef}, setRefs] = useState({})
 
-  const animationTimeline = useClapAnimation()
+  const setRef = useCallback((node) => {
+    setRefs(prev => ({
+      ...prev,
+      [node.dataset.refkey]: node
+    }))
+  }, [])
+
+  const animationTimeline = useClapAnimation({
+    clapEl: clapRef,
+    countEl: clapCountRef,
+    countTotalEl: countTotalRef
+  })
   
   const handleClapClick = () => {
     animationTimeline.replay()
@@ -111,13 +135,14 @@ const MediumClap = () => {
 
   return (
     <button
-      id='clap'
+      ref={setRef}
+      data-refkey="clapRef"
       className={styles.clap}
       onClick={handleClapClick}
     >
       <ClapIcon isClicked={isClicked} />
-      <ClapCount count={count} />
-      <CountTotal countTotal={countTotal} />
+      <ClapCount setRef={setRef} count={count} />
+      <CountTotal setRef={setRef} countTotal={countTotal} />
     </button>
   )
 }
@@ -144,10 +169,11 @@ const ClapIcon = ({isClicked}) => {
   )
 }
 
-const ClapCount = ({count}) => {
+const ClapCount = ({count, setRef}) => {
   return (
     <span
-      id='clapCount'
+      ref={setRef}
+      data-refkey="clapCountRef"
       className={styles.count}
     >
       + {count}
@@ -155,10 +181,11 @@ const ClapCount = ({count}) => {
   )
 }
 
-const CountTotal = ({countTotal}) => {
+const CountTotal = ({countTotal, setRef}) => {
   return (
     <span
-      id='clapCountTotal'
+      ref={setRef}
+      data-refkey="countTotalRef"
       className={styles.total}
     >
       {countTotal}
