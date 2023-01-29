@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import mojs from 'mo-js'
@@ -130,10 +131,13 @@ const MediumClap = ({ children, onClap }) => {
     countTotalEl: countTotalRef
   })
 
+  const componentJustMounted = useRef(true)
   useEffect(() => {
-    onClap && onClap(clapState)
+    if (!componentJustMounted.current) {
+      onClap && onClap(clapState)
+    }
+    componentJustMounted.current = false
   }, [count])
-  
   
   const handleClapClick = () => {
     animationTimeline.replay()
