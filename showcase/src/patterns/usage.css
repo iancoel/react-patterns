@@ -17,6 +17,10 @@
     border: 1px solid #896EAF; 
 }
 
+.icon {
+    border: 1px solid #896EAF;
+}
+
 .cupContainer {
     width: 100px;
     min-height: 100px;

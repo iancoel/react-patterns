@@ -136,7 +136,7 @@ export const DisplayBox = styled.div`
   }
 
   button {
-    max-width: 70%;
+    /* max-width: 70%; */
     display: inline-block;
   }
 
