@@ -258,21 +258,40 @@ MediumClap.Count = ClapCount
 MediumClap.Total = CountTotal
 
 // Usage
+const INITIAL_STATE = {
+  count: 0,
+  countTotal: 2100,
+  isClicked: false
+}
+const MAXIMUM_CLAP_VAL = 10
+
 const Usage = () => {
-  const [count, setCount] = useState(0)
-  const handleClap = (clapState) => {
-    setCount(clapState.count)
+  const [state, setState] = useState(INITIAL_STATE)
+  const handleClap = () => {
+    setState(({count, countTotal}) => ({
+      count: Math.min(count + 1, MAXIMUM_CLAP_VAL),
+      countTotal: count < MAXIMUM_CLAP_VAL ? countTotal + 1 : countTotal,
+      isClicked: true
+    }))
   }
+
+
 
   return (
     <div>
-      <MediumClap onClap={handleClap}>
+      <MediumClap values={state} onClap={handleClap}>
+        <MediumClap.Icon/>
+        <MediumClap.Count/>
+        <MediumClap.Total/>
+      </MediumClap>
+
+      <MediumClap values={state} onClap={handleClap}>
         <MediumClap.Icon/>
         <MediumClap.Count/>
         <MediumClap.Total/>
       </MediumClap>
       <div>
-        {!!count && `You have clapped ${count} times`}
+        {!!state.count && `You have clapped ${state.count} times`}
       </div>
     </div>
   )
